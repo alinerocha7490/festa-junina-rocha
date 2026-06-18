@@ -7,20 +7,12 @@
 <link href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root {
-    --red: #C0392B;
-    --yellow: #F4D03F;
-    --green: #27AE60;
-    --orange: #E67E22;
-    --cream: #FEF9EE;
-    --brown: #7B4A1E;
-    --dark: #2C1810;
+    --red: #C0392B; --yellow: #F4D03F; --green: #27AE60; --orange: #E67E22;
+    --cream: #FEF9EE; --brown: #7B4A1E; --dark: #2C1810;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
-    background: var(--cream);
-    font-family: 'Nunito', sans-serif;
-    color: var(--dark);
-    min-height: 100vh;
+    background: var(--cream); font-family: 'Nunito', sans-serif; color: var(--dark); min-height: 100vh;
     background-image: repeating-linear-gradient(45deg, transparent, transparent 40px, rgba(244,208,63,0.05) 40px, rgba(244,208,63,0.05) 80px);
   }
   .bandeirinhas { width: 100%; height: 12px; background: var(--brown); }
@@ -41,10 +33,14 @@
     background: white; border: 3px dashed var(--orange); border-radius: 16px; padding: 16px 20px;
     margin-bottom: 28px; text-align: center; font-size: 1rem; color: var(--brown); font-weight: 700; line-height: 1.5;
   }
+  .diagBanner {
+    display: none; background:#fee; border:3px solid #c0392b; border-radius:12px; padding:14px 18px;
+    margin-bottom:20px; color:#900; font-weight:700; font-size:0.85rem; word-break:break-word;
+  }
   .progress-bar-wrap { margin-bottom: 28px; }
   .progress-label { font-weight: 800; color: var(--brown); margin-bottom: 8px; font-size: 0.95rem; }
   .progress-bar { background: #e0d0b0; border-radius: 99px; height: 18px; overflow: hidden; border: 2px solid var(--brown); }
-  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--green), var(--yellow)); border-radius: 99px; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--green), var(--yellow)); border-radius: 99px; transition: width 0.4s; }
   .category { margin-bottom: 28px; }
   .category-title {
     font-family: 'Abril Fatface', serif; font-size: 1.3rem; color: white; padding: 10px 18px;
@@ -61,8 +57,9 @@
   .cat-doce      + .items-list { border-color: #8E44AD; }
   .cat-utensilio + .items-list { border-color: var(--brown); }
   .cat-decoracao + .items-list { border-color: var(--green); }
-  .item { display: flex; align-items: center; padding: 14px 16px; border-bottom: 2px dashed #f0e0c0; gap: 12px; }
+  .item { display: flex; align-items: center; padding: 14px 16px; border-bottom: 2px dashed #f0e0c0; gap: 12px; cursor: pointer; }
   .item:last-child { border-bottom: none; }
+  .item:active { background: #fffbf0; }
   .item.taken { background: #f0fff4; }
   .item-check {
     width: 26px; height: 26px; border: 3px solid #ccc; border-radius: 6px; flex-shrink: 0;
@@ -73,7 +70,31 @@
   .item-name { font-weight: 700; font-size: 1rem; color: var(--dark); }
   .item.taken .item-name { text-decoration: line-through; color: #888; }
   .item-qty { font-size: 0.78rem; color: #999; font-weight: 600; margin-top: 2px; }
-  .item-person { font-size: 0.92rem; font-weight: 800; color: var(--green); max-width: 140px; text-align: right; }
+  .item-person { font-size: 0.88rem; font-weight: 700; color: var(--green); max-width: 140px; text-align: right; }
+  .modal-overlay {
+    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 100;
+    align-items: center; justify-content: center; padding: 20px;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--cream); border-radius: 20px; padding: 28px 24px; max-width: 380px; width: 100%;
+    border: 4px solid var(--orange); box-shadow: 0 12px 40px rgba(0,0,0,0.3); text-align: center;
+  }
+  .modal h2 { font-family: 'Abril Fatface', serif; font-size: 1.5rem; color: var(--red); margin-bottom: 6px; }
+  .modal p { color: var(--brown); font-weight: 600; margin-bottom: 18px; font-size: 0.95rem; }
+  .modal input {
+    width: 100%; padding: 12px 16px; border: 3px solid var(--orange); border-radius: 10px;
+    font-family: 'Nunito', sans-serif; font-size: 1rem; font-weight: 700; color: var(--dark);
+    background: white; margin-bottom: 16px; outline: none;
+  }
+  .modal-buttons { display: flex; gap: 10px; }
+  .btn {
+    flex: 1; padding: 12px; border: none; border-radius: 10px; font-family: 'Nunito', sans-serif;
+    font-size: 1rem; font-weight: 800; cursor: pointer;
+  }
+  .btn-confirm { background: var(--green); color: white; }
+  .btn-cancel  { background: #ddd; color: #555; }
+  .btn-unmark  { background: var(--red); color: white; }
   .observacoes {
     background: white; border: 3px dashed var(--green); border-radius: 16px; padding: 18px 22px;
     margin-top: 8px; margin-bottom: 12px;
@@ -81,8 +102,13 @@
   .observacoes h3 { font-family: 'Abril Fatface', serif; font-size: 1.1rem; color: var(--brown); margin-bottom: 10px; }
   .observacoes p { font-size: 0.92rem; color: var(--dark); font-weight: 600; line-height: 1.5; margin-bottom: 8px; }
   .observacoes p:last-child { margin-bottom: 0; }
+  .toast {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px);
+    background: var(--brown); color: white; padding: 12px 24px; border-radius: 30px; font-weight: 700;
+    font-size: 0.9rem; z-index: 200; transition: transform 0.4s; max-width: 90vw; text-align: center;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
   footer { text-align: center; color: var(--brown); font-size: 0.85rem; font-weight: 700; padding: 20px; opacity: 0.7; }
-  .updated-note { text-align: center; font-size: 0.78rem; color: #999; margin-top: -20px; margin-bottom: 20px; font-weight: 600; }
 </style>
 </head>
 <body>
@@ -98,11 +124,13 @@
 <div class="container">
 
   <div class="instructions">
-    👆 Quer marcar seu nome em algum item? Mande mensagem no grupo da família dizendo o que você vai trazer, e a lista é atualizada aqui para todo mundo ver!
+    👆 Clique em qualquer item para marcar seu nome e confirmar o que você vai trazer!
   </div>
 
+  <div class="diagBanner" id="diagBanner"></div>
+
   <div class="progress-bar-wrap">
-    <div class="progress-label" id="progressLabel"></div>
+    <div class="progress-label" id="progressLabel">Carregando...</div>
     <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
   </div>
 
@@ -111,98 +139,212 @@
   <div class="observacoes">
     <h3>📌 Observações</h3>
     <p>🍺 Quem gostar de cerveja pode trazer a sua.</p>
-    <p>💚 Quer trazer algo que não está na lista? Pode trazer sim! A lista é só para ajudar a organizar, mas não é obrigatória nem fechada — é só avisar no grupo.</p>
+    <p>💚 Quer trazer algo que não está na lista? Pode trazer sim! A lista é só para ajudar a organizar, mas não é obrigatória nem fechada — é só avisar.</p>
   </div>
 
 </div>
 
-<div class="updated-note" id="updatedNote"></div>
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <h2 id="modalTitle">Marcar item</h2>
+    <p id="modalSubtitle">Digite seu nome para confirmar</p>
+    <input type="text" id="nameInput" placeholder="Seu nome..." maxlength="40"/>
+    <div class="modal-buttons" id="modalButtons">
+      <button class="btn btn-cancel" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-confirm" onclick="confirmItem()">✅ Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
 <footer>🎆 Arraial da Família Rocha · 28/06/2026 🎆</footer>
 
 <script>
-const LAST_UPDATED = "18/06/2026 13:10";
-
 const DATA = [
-  {
-    id: "comida",
-    label: "🍗 Comida Salgada",
-    cls: "cat-comida",
-    items: [
-      { id:"c1", name:"Cachorro quente", qty:"a combinar", person:"Fernanda" },
-      { id:"c2", name:"Pastel de carne", qty:"50 unidades", person:null },
-      { id:"c3", name:"Pastel de queijo", qty:"50 unidades", person:null },
-      { id:"c4", name:"Pastel de pizza", qty:"50 unidades", person:"Fernanda" },
-      { id:"c5", name:"Salgadinhos", qty:"50 unidades", person:null },
-      { id:"c6", name:"Salgadinhos", qty:"50 unidades", person:null },
-      { id:"c7", name:"Salgadinhos", qty:"50 unidades", person:null },
-      { id:"c8", name:"Empadão", qty:"1 forma grande", person:null },
-      { id:"c9", name:"Bolinho de aipim", qty:"40 unidades", person:null },
-      { id:"c10", name:"Milho cozido", qty:"20 espigas", person:null },
-      { id:"c11", name:"Caldo Vaca atolada", qty:"panela grande", person:null },
-      { id:"c12", name:"Sopa de ervilha", qty:"panela grande", person:null },
-      { id:"c13", name:"Caldo de pinto", qty:"panela grande", person:"Gileide" },
-    ]
-  },
-  {
-    id: "doce",
-    label: "🍮 Doces & Sobremesas",
-    cls: "cat-doce",
-    items: [
-      { id:"d1", name:"Canjica (mungunzá)", qty:"panela grande", person:null },
-      { id:"d2", name:"Curau de milho", qty:"tigela grande", person:null },
-      { id:"d3", name:"Pamonha doce", qty:"20 unidades", person:null },
-      { id:"d6", name:"Cocada", qty:"bandeja", person:null },
-      { id:"d7", name:"Pé-de-moleque", qty:"bandeja", person:null },
-      { id:"d8", name:"Doce de abóbora com coco", qty:"tigela", person:null },
-      { id:"d9", name:"Cuscuz branco", qty:"travessa grande", person:null },
-      { id:"d10", name:"Doce de amendoim", qty:"bandeja", person:null },
-      { id:"d11", name:"Pé de moça", qty:"bandeja", person:null },
-      { id:"d12", name:"Paçoca", qty:"bandeja", person:null },
-      { id:"d13", name:"Bolo de cenoura", qty:"1 forma", person:"Gileide" },
-      { id:"d14", name:"Bolo de aipim", qty:"1 forma", person:null },
-    ]
-  },
-  {
-    id: "bebida",
-    label: "🍹 Bebidas",
-    cls: "cat-bebida",
-    items: [
-      { id:"b1", name:"Refrigerante 2L Coca-Cola Zero", qty:"2 unidades", person:"Luiz Claudio" },
-      { id:"b2", name:"Refrigerante 2L Coca-Cola normal", qty:"2 unidades", person:"Fábio" },
-      { id:"b3", name:"Refrigerante 2L Fanta Laranja", qty:"2 unidades", person:null },
-      { id:"b4", name:"Refrigerante 2L Guaraná Antarctica", qty:"2 unidades", person:null },
-      { id:"b5", name:"Refrigerante 2L Guaraná Antarctica Zero", qty:"2 unidades", person:"Luis Fernando" },
-      { id:"b6", name:"Caixa de suco", qty:"2 unidades", person:null },
-      { id:"b7", name:"Caixa de suco", qty:"2 unidades", person:null },
-      { id:"b8", name:"Vinho", qty:"2 garrafas de 2 litros", person:"Edival" },
-      { id:"b9", name:"Quentão", qty:"panela grande", person:null },
-      { id:"b10", name:"Caipirinha", qty:"a combinar", person:null },
-    ]
-  },
-  {
-    id: "utensilio",
-    label: "🍽️ Utensílios & Descartáveis",
-    cls: "cat-utensilio",
-    items: [
-      { id:"u1", name:"Descartáveis (guardanapo 3 pcts, copo 300ml 2 pcts, colher 2 pcts, pote de isopor para sopa 70 unds)", qty:"pacote completo", person:null },
-    ]
-  },
-  {
-    id: "decoracao",
-    label: "🎊 Decoração",
-    cls: "cat-decoracao",
-    items: [
-      { id:"dec1", name:"Bandeirinhas coloridas", qty:"pelo menos 10 metros", person:null },
-      { id:"dec2", name:"Chapéu de palha", qty:"15 unidades", person:null },
-      { id:"dec3", name:"Balões caipiras (xadrez)", qty:"2 pacotes", person:null },
-      { id:"dec4", name:"Toalhas de mesa xadrez", qty:"3–4 unidades", person:null },
-    ]
-  }
+  { id: "comida", label: "🍗 Comida Salgada", cls: "cat-comida", items: [
+      { id:"c1", name:"Cachorro quente", qty:"a combinar" },
+      { id:"c2", name:"Pastel de carne", qty:"50 unidades" },
+      { id:"c3", name:"Pastel de queijo", qty:"50 unidades" },
+      { id:"c4", name:"Pastel de pizza", qty:"50 unidades" },
+      { id:"c5", name:"Salgadinhos", qty:"50 unidades" },
+      { id:"c6", name:"Salgadinhos", qty:"50 unidades" },
+      { id:"c7", name:"Salgadinhos", qty:"50 unidades" },
+      { id:"c8", name:"Empadão", qty:"1 forma grande" },
+      { id:"c9", name:"Bolinho de aipim", qty:"40 unidades" },
+      { id:"c10", name:"Milho cozido", qty:"20 espigas" },
+      { id:"c11", name:"Caldo Vaca atolada", qty:"panela grande" },
+      { id:"c12", name:"Sopa de ervilha", qty:"panela grande" },
+      { id:"c13", name:"Caldo de pinto", qty:"panela grande" },
+  ]},
+  { id: "doce", label: "🍮 Doces & Sobremesas", cls: "cat-doce", items: [
+      { id:"d1", name:"Canjica (mungunzá)", qty:"panela grande" },
+      { id:"d2", name:"Curau de milho", qty:"tigela grande" },
+      { id:"d3", name:"Pamonha doce", qty:"20 unidades" },
+      { id:"d6", name:"Cocada", qty:"bandeja" },
+      { id:"d7", name:"Pé-de-moleque", qty:"bandeja" },
+      { id:"d8", name:"Doce de abóbora com coco", qty:"tigela" },
+      { id:"d9", name:"Cuscuz branco", qty:"travessa grande" },
+      { id:"d10", name:"Doce de amendoim", qty:"bandeja" },
+      { id:"d11", name:"Pé de moça", qty:"bandeja" },
+      { id:"d12", name:"Paçoca", qty:"bandeja" },
+      { id:"d13", name:"Bolo de cenoura", qty:"1 forma" },
+      { id:"d14", name:"Bolo de aipim", qty:"1 forma" },
+  ]},
+  { id: "bebida", label: "🍹 Bebidas", cls: "cat-bebida", items: [
+      { id:"b1", name:"Refrigerante 2L Coca-Cola Zero", qty:"2 unidades" },
+      { id:"b2", name:"Refrigerante 2L Coca-Cola normal", qty:"2 unidades" },
+      { id:"b3", name:"Refrigerante 2L Fanta Laranja", qty:"2 unidades" },
+      { id:"b4", name:"Refrigerante 2L Guaraná Antarctica", qty:"2 unidades" },
+      { id:"b5", name:"Refrigerante 2L Guaraná Antarctica Zero", qty:"2 unidades" },
+      { id:"b6", name:"Caixa de suco", qty:"2 unidades" },
+      { id:"b7", name:"Caixa de suco", qty:"2 unidades" },
+      { id:"b8", name:"Vinho", qty:"2 garrafas de 2 litros" },
+      { id:"b9", name:"Quentão", qty:"panela grande" },
+      { id:"b10", name:"Caipirinha", qty:"a combinar" },
+  ]},
+  { id: "utensilio", label: "🍽️ Utensílios & Descartáveis", cls: "cat-utensilio", items: [
+      { id:"u1", name:"Descartáveis (guardanapo 3 pcts, copo 300ml 2 pcts, colher 2 pcts, pote de isopor para sopa 70 unds)", qty:"pacote completo" },
+  ]},
+  { id: "decoracao", label: "🎊 Decoração", cls: "cat-decoracao", items: [
+      { id:"dec1", name:"Bandeirinhas coloridas", qty:"pelo menos 10 metros" },
+      { id:"dec2", name:"Chapéu de palha", qty:"15 unidades" },
+      { id:"dec3", name:"Balões caipiras (xadrez)", qty:"2 pacotes" },
+      { id:"dec4", name:"Toalhas de mesa xadrez", qty:"3–4 unidades" },
+  ]}
 ];
+
+const DEFAULT_STATE = {
+  "c1": "Fernanda", "c4": "Fernanda", "c13": "Gileide",
+  "b1": "Luiz Claudio", "b2": "Fábio", "b5": "Luis Fernando", "b8": "Edival",
+  "d13": "Gileide"
+};
+
+// --- GitHub-backed storage ---
+// Data is stored as a JSON file inside this same repository, read/written
+// directly via the GitHub REST API. This works because GitHub Pages itself
+// only serves static files, but the GitHub API can be called from any
+// browser over plain HTTPS.
+const GH_OWNER = "alinerocha7490";
+const GH_REPO = "festa-junina-rocha";
+const GH_FILE_PATH = "dados.json";
+const GH_TOKEN = "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";
+const GH_API = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${GH_FILE_PATH}`;
+
+let state = {};
+let currentSha = null; // needed by GitHub API to update an existing file safely
+let currentItemId = null;
+let isLoading = true;
+
+function b64EncodeUnicode(str) {
+  return btoa(unescape(encodeURIComponent(str)));
+}
+function b64DecodeUnicode(str) {
+  return decodeURIComponent(escape(atob(str)));
+}
+
+async function ghGet() {
+  const res = await fetch(GH_API, {
+    headers: {
+      "Authorization": "Bearer " + GH_TOKEN,
+      "Accept": "application/vnd.github+json"
+    }
+  });
+  if (res.status === 404) {
+    return { exists: false };
+  }
+  if (!res.ok) {
+    throw new Error("GitHub GET falhou: " + res.status + " " + (await res.text()));
+  }
+  const json = await res.json();
+  const content = JSON.parse(b64DecodeUnicode(json.content.replace(/\n/g, "")));
+  return { exists: true, content, sha: json.sha };
+}
+
+async function ghPut(newContentObj, sha) {
+  const body = {
+    message: "Atualiza lista da festa junina",
+    content: b64EncodeUnicode(JSON.stringify(newContentObj, null, 2))
+  };
+  if (sha) body.sha = sha;
+  const res = await fetch(GH_API, {
+    method: "PUT",
+    headers: {
+      "Authorization": "Bearer " + GH_TOKEN,
+      "Accept": "application/vnd.github+json",
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(body)
+  });
+  if (!res.ok) {
+    throw new Error("GitHub PUT falhou: " + res.status + " " + (await res.text()));
+  }
+  const json = await res.json();
+  return json.content.sha;
+}
+
+function showDiag(msg) {
+  const el = document.getElementById("diagBanner");
+  if (msg) {
+    el.style.display = "block";
+    el.textContent = "⚠️ " + msg;
+  } else {
+    el.style.display = "none";
+  }
+}
+
+async function loadState() {
+  try {
+    const result = await ghGet();
+    if (result.exists) {
+      state = result.content;
+      currentSha = result.sha;
+    } else {
+      // File genuinely doesn't exist yet on GitHub -> first time ever, create it
+      state = { ...DEFAULT_STATE };
+      currentSha = await ghPut(state, null);
+    }
+    showDiag(null);
+  } catch (err) {
+    console.error(err);
+    state = { ...DEFAULT_STATE };
+    currentSha = null;
+    showDiag("Não foi possível carregar os dados agora. Mostrando valores padrão temporariamente. Detalhe: " + err.message);
+  }
+  isLoading = false;
+  render();
+}
+
+async function saveState() {
+  try {
+    currentSha = await ghPut(state, currentSha);
+    showDiag(null);
+    return true;
+  } catch (err) {
+    console.error(err);
+    showDiag("Erro ao salvar: " + err.message + ". Tentando recarregar dados atuais...");
+    // Re-sync with server in case our sha was stale (someone else saved in between)
+    try {
+      const result = await ghGet();
+      if (result.exists) {
+        state = result.content;
+        currentSha = result.sha;
+      }
+    } catch (e2) {}
+    render();
+    return false;
+  }
+}
 
 function render() {
   const container = document.getElementById("listContainer");
   container.innerHTML = "";
+
+  if (isLoading) {
+    container.innerHTML = `<div style="text-align:center; padding:40px; color:#7B4A1E; font-weight:700;">Carregando lista...</div>`;
+    return;
+  }
+
   let total = 0, done = 0;
 
   DATA.forEach(cat => {
@@ -218,17 +360,19 @@ function render() {
 
     cat.items.forEach(item => {
       total++;
-      if (item.person) done++;
+      const taken = state[item.id];
+      if (taken) done++;
       const row = document.createElement("div");
-      row.className = "item" + (item.person ? " taken" : "");
+      row.className = "item" + (taken ? " taken" : "");
       row.innerHTML = `
-        <div class="item-check">${item.person ? "✓" : ""}</div>
+        <div class="item-check">${taken ? "✓" : ""}</div>
         <div class="item-info">
           <div class="item-name">${item.name}</div>
           <div class="item-qty">${item.qty}</div>
         </div>
-        <div class="item-person">${item.person || ""}</div>
+        <div class="item-person">${taken || ""}</div>
       `;
+      row.addEventListener("click", () => openModal(item.id, item.name, !!taken));
       list.appendChild(row);
     });
 
@@ -238,10 +382,122 @@ function render() {
 
   document.getElementById("progressLabel").textContent = `${done} de ${total} itens confirmados`;
   document.getElementById("progressFill").style.width = (total ? Math.round(done/total*100) : 0) + "%";
-  document.getElementById("updatedNote").textContent = "Última atualização: " + LAST_UPDATED;
 }
 
-render();
+function openModal(itemId, itemName, isTaken) {
+  currentItemId = itemId;
+  document.getElementById("modalTitle").textContent = itemName;
+  const btns = document.getElementById("modalButtons");
+  const input = document.getElementById("nameInput");
+
+  if (isTaken) {
+    document.getElementById("modalSubtitle").textContent = `Já marcado por: ${state[itemId]}. Deseja desmarcar?`;
+    input.style.display = "none";
+    btns.innerHTML = `
+      <button class="btn btn-cancel" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-unmark" onclick="unmarkItem()">❌ Desmarcar</button>
+    `;
+  } else {
+    document.getElementById("modalSubtitle").textContent = "Digite seu nome para confirmar que vai trazer:";
+    input.style.display = "block";
+    input.value = "";
+    btns.innerHTML = `
+      <button class="btn btn-cancel" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-confirm" onclick="confirmItem()">✅ Confirmar</button>
+    `;
+    setTimeout(() => input.focus(), 100);
+  }
+  document.getElementById("modalOverlay").classList.add("open");
+}
+
+function closeModal() {
+  document.getElementById("modalOverlay").classList.remove("open");
+  currentItemId = null;
+}
+
+async function confirmItem() {
+  const name = document.getElementById("nameInput").value.trim();
+  if (!name) {
+    document.getElementById("nameInput").style.borderColor = "red";
+    return;
+  }
+  const itemId = currentItemId;
+  closeModal();
+  showToast("Salvando...");
+
+  // Always re-fetch the freshest data right before writing, to avoid clobbering
+  // someone else's change made in between page loads.
+  try {
+    const result = await ghGet();
+    if (result.exists) {
+      state = result.content;
+      currentSha = result.sha;
+    }
+  } catch (err) {
+    console.log("Não foi possível buscar estado fresco, usando estado local:", err.message);
+  }
+
+  state[itemId] = name;
+  render();
+  const ok = await saveState();
+  render();
+  if (ok) {
+    showToast(`✅ ${name} confirmado(a) e salvo! Arrasou 🎊`);
+  } else {
+    showToast("⚠️ Não foi possível salvar. Tente de novo em alguns segundos.");
+  }
+}
+
+async function unmarkItem() {
+  const itemId = currentItemId;
+  closeModal();
+  showToast("Salvando...");
+
+  try {
+    const result = await ghGet();
+    if (result.exists) {
+      state = result.content;
+      currentSha = result.sha;
+    }
+  } catch (err) {}
+
+  delete state[itemId];
+  render();
+  const ok = await saveState();
+  render();
+  if (ok) {
+    showToast("Item desmarcado e salvo.");
+  } else {
+    showToast("⚠️ Não foi possível salvar. Tente de novo em alguns segundos.");
+  }
+}
+
+function showToast(msg) {
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  setTimeout(() => t.classList.remove("show"), 3000);
+}
+
+document.getElementById("modalOverlay").addEventListener("click", function(e) {
+  if (e.target === this) closeModal();
+});
+document.getElementById("nameInput").addEventListener("keydown", function(e) {
+  if (e.key === "Enter") confirmItem();
+});
+
+loadState();
+// Refresh from GitHub periodically so everyone sees updates from others
+setInterval(async () => {
+  try {
+    const result = await ghGet();
+    if (result.exists && JSON.stringify(result.content) !== JSON.stringify(state)) {
+      state = result.content;
+      currentSha = result.sha;
+      render();
+    }
+  } catch (err) {}
+}, 6000);
 </script>
 </body>
 </html>
